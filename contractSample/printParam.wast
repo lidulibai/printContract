@@ -1,0 +1,20 @@
+(module
+ (type $FUNCSIG$i (func (result i32)))
+ (type $FUNCSIG$ii (func (param i32) (result i32)))
+ (import "env" "print" (func $print (param i32) (result i32)))
+ (import "env" "printNum" (func $printNum (param i32) (result i32)))
+ (import "env" "println" (func $println (param i32) (result i32)))
+ (import "env" "printlnNum" (func $printlnNum (param i32) (result i32)))
+ (import "env" "allowed" (func $allowed (param i32 i32) (result i32)))
+ (table 0 anyfunc)
+ (memory $0 1)
+ (export "memory" (memory $0))
+ (export "printWhatYouWant" (func $printWhatYouWant))
+ (func $printWhatYouWant (; 1 ;) (param $0 i32)
+  (drop
+   (call $println
+    (get_local $0)
+   )
+  )
+ )
+)
