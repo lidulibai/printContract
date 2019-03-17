@@ -20,6 +20,7 @@
  (export "memory" (memory $0))
  (export "createToken" (func $createToken))
  (export "transfer" (func $transfer))
+ (export "transferfrom" (func $transferfrom))
  (export "balanceOf" (func $balanceOf))
  (export "approve" (func $approve))
  (export "allowance" (func $allowance))
@@ -40,32 +41,22 @@
  )
  (func $transfer (; 9 ;) (param $0 i32) (param $1 i32) (result i32)
   (local $2 i32)
-  (local $3 i32)
-  (set_local $3
+  (set_local $2
    (i32.const 0)
   )
   (block $label$0
    (br_if $label$0
     (i32.lt_s
-     (tee_local $2
-      (call $getMyBalance)
-     )
+     (call $getMyBalance)
      (get_local $1)
     )
    )
    (drop
-    (call $println
-     (tee_local $3
-      (i32.sub
-       (get_local $2)
-       (get_local $1)
-      )
-     )
-    )
-   )
-   (drop
     (call $setBalance
-     (get_local $3)
+     (i32.sub
+      (call $getMyBalance)
+      (get_local $1)
+     )
     )
    )
    (drop
@@ -79,18 +70,88 @@
      )
     )
    )
-   (set_local $3
+   (set_local $2
     (i32.const 1)
    )
   )
-  (get_local $3)
+  (get_local $2)
  )
- (func $balanceOf (; 10 ;) (param $0 i32) (result i32)
+ (func $transferfrom (; 10 ;) (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
+  (local $3 i32)
+  (local $4 i32)
+  (set_local $3
+   (call $allowed
+    (get_local $0)
+    (call $getAdress)
+   )
+  )
+  (set_local $4
+   (call $getOtherBalance
+    (get_local $0)
+   )
+  )
+  (block $label$0
+   (br_if $label$0
+    (i32.lt_s
+     (get_local $3)
+     (get_local $2)
+    )
+   )
+   (br_if $label$0
+    (i32.lt_s
+     (get_local $4)
+     (get_local $2)
+    )
+   )
+   (drop
+    (call $setOtherBalance
+     (get_local $1)
+     (i32.add
+      (call $getOtherBalance
+       (get_local $1)
+      )
+      (get_local $2)
+     )
+    )
+   )
+   (drop
+    (call $setOtherBalance
+     (get_local $0)
+     (i32.sub
+      (call $getOtherBalance
+       (get_local $0)
+      )
+      (get_local $2)
+     )
+    )
+   )
+   (br_if $label$0
+    (i32.gt_s
+     (get_local $3)
+     (i32.const 9999)
+    )
+   )
+   (drop
+    (call $setAllowed
+     (get_local $0)
+     (i32.sub
+      (call $allowed
+       (get_local $0)
+       (call $getAdress)
+      )
+      (get_local $2)
+     )
+    )
+   )
+  )
+  (i32.const 1)
+ )
+ (func $balanceOf (; 11 ;) (param $0 i32) (result i32)
   (call $getOtherBalance
    (get_local $0)
   )
  )
- (func $approve (; 11 ;) (param $0 i32) (param $1 i32) (result i32)
+ (func $approve (; 12 ;) (param $0 i32) (param $1 i32) (result i32)
   (drop
    (call $setAllowed
     (get_local $0)
@@ -99,7 +160,7 @@
   )
   (i32.const 1)
  )
- (func $allowance (; 12 ;) (param $0 i32) (param $1 i32) (result i32)
+ (func $allowance (; 13 ;) (param $0 i32) (param $1 i32) (result i32)
   (call $allowed
    (get_local $0)
    (get_local $1)
